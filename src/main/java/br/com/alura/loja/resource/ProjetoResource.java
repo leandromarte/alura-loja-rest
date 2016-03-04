@@ -1,11 +1,13 @@
 package br.com.alura.loja.resource;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -29,11 +31,10 @@ public class ProjetoResource {
 		return "<status>sucesso</status>";
 	}
 	
-	
-//	@GET
-//	@Path("{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public String busca(@PathParam("id") long id) {
-//		return new ProjetoDAO().busca(id).toJSON();
-//	}	
+	@DELETE 
+	@Path("{id}")
+	public Response remove(@PathParam("id") long id) {
+		new ProjetoDAO().remove(id);
+		return Response.ok().build();
+	}
 }

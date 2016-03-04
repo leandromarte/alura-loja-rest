@@ -1,7 +1,5 @@
 package br.com.alura.loja;
 
-import java.net.URI;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -10,8 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,16 +38,16 @@ public class ClientTest {
 	public void verificaProjetoResource() {
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target("http://localhost:8080/");
-		String conteudo = target.path("projetos").request().get(String.class);
-		Assert.assertTrue(conteudo.contains("alura"));		
+		Response conteudo = target.path("projetos").request().get();
+		Assert.assertEquals(conteudo, 201);		
 	}
 	
 	@Test
 	public void testaQueBuscarUmCarrinhoTrazOCarrinhoEsperado() {
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target("http://localhost:8080/");
-		String conteudo = target.path("carrinhos/1").request().get(String.class);
-		Assert.assertTrue(conteudo.contains("<rua>Rua Vergueiro 3185"));		
+		Response resp = target.path("carrinhos/1").request().get();
+		Assert.assertEquals(resp.getStatus(), 200);		
 	}
 	
 	@Test
@@ -68,7 +64,7 @@ public class ClientTest {
 		Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
 		
 		Response response = target.path("/carrinhos").request().post(entity);
-		Assert.assertEquals("<status>sucesso</status>", response.readEntity(String.class));        		
+		Assert.assertEquals(response.getStatus(), 201);        		
 	}
 	
     @After

@@ -1,11 +1,16 @@
 package br.com.alura.loja.resource;
 
+import java.net.URI;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -23,16 +28,19 @@ public class CarrinhoResource {
 	}
 	
 	@POST
-	@Produces(MediaType.APPLICATION_XML)
-	public String salva(String conteudo) {
-		new CarrinhoDAO().adiciona((Carrinho) new XStream().fromXML(conteudo));
-		return "<status>sucesso</status>";
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response salva(String conteudo) throws Exception {
+		Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
+		new CarrinhoDAO().adiciona(carrinho);
+		return Response.created(new URI("/carrinhos/" + carrinho.getId())).build();
 	}
 	
-//	@GET
-//	@Path("{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public String busca(@PathParam("id") long id) {
-//		return new CarrinhoDAO().busca(id).toJSON();
-//	}	
+    @DELETE
+    @Path("{id}/produtos/{produtoId}")
+    public Response removeProduto(@PathParam("id") long id,
+            @PathParam("produtoId") long produtoId) {
+        Carrinho carrinho = new CarrinhoDAO().busca(id);
+        carrinho.remove(produtoId);
+        return Response.ok().build();
+    }
 }
